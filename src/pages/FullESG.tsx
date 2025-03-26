@@ -231,7 +231,9 @@ const FullESG = () => {
                     <div className="flex flex-col md:flex-row items-center gap-6 md:gap-12">
                       <div className="md:w-1/3">
                         <div className={`w-24 h-24 rounded-full mx-auto flex items-center justify-center ${calculatorSections[3].color}`}>
-                          <calculatorSections[3].icon className={`h-12 w-12 ${calculatorSections[3].textColor}`} />
+                          {React.createElement(calculatorSections[3].icon, { 
+                            className: `h-12 w-12 ${calculatorSections[3].textColor}` 
+                          })}
                         </div>
                       </div>
                       <div className="md:w-2/3 text-center md:text-left">
