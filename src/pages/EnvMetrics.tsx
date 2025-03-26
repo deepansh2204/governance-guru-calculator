@@ -1,4 +1,3 @@
-
 import Calculator from '@/components/Calculator';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -14,7 +13,7 @@ const EnvMetrics = () => {
       step: 1,
       weight: 10,
       idealValue: 0,
-      idealRange: [0, 100]
+      idealRange: [0, 100] as [number, number]
     },
     {
       id: 'renewable_energy',
@@ -25,7 +24,7 @@ const EnvMetrics = () => {
       step: 5,
       weight: 8,
       idealValue: 100,
-      idealRange: [50, 100]
+      idealRange: [50, 100] as [number, number]
     },
     {
       id: 'waste_reduction',
@@ -36,7 +35,7 @@ const EnvMetrics = () => {
       step: 5,
       weight: 7,
       idealValue: 100,
-      idealRange: [60, 100]
+      idealRange: [60, 100] as [number, number]
     },
     {
       id: 'water_consumption',
@@ -47,7 +46,7 @@ const EnvMetrics = () => {
       step: 10,
       weight: 6,
       idealValue: 0,
-      idealRange: [0, 1000]
+      idealRange: [0, 1000] as [number, number]
     },
     {
       id: 'environmental_policy',
@@ -79,7 +78,7 @@ const EnvMetrics = () => {
       step: 5,
       weight: 5,
       idealValue: 100,
-      idealRange: [70, 100]
+      idealRange: [70, 100] as [number, number]
     },
     {
       id: 'environmental_compliance',
@@ -90,7 +89,7 @@ const EnvMetrics = () => {
       step: 1,
       weight: 8,
       idealValue: 0,
-      idealRange: [0, 0]
+      idealRange: [0, 0] as [number, number]
     },
     {
       id: 'biodiversity_impact',
@@ -101,7 +100,7 @@ const EnvMetrics = () => {
       step: 1,
       weight: 6,
       idealValue: 10,
-      idealRange: [7, 10]
+      idealRange: [7, 10] as [number, number]
     }
   ];
 

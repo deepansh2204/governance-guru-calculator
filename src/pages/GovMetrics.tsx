@@ -1,4 +1,3 @@
-
 import Calculator from '@/components/Calculator';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -14,7 +13,7 @@ const GovMetrics = () => {
       step: 5,
       weight: 10,
       idealValue: 75,
-      idealRange: [60, 100]
+      idealRange: [60, 100] as [number, number] // Fix type to tuple
     },
     {
       id: 'board_diversity',
@@ -25,7 +24,7 @@ const GovMetrics = () => {
       step: 5,
       weight: 8,
       idealValue: 50,
-      idealRange: [40, 60]
+      idealRange: [40, 60] as [number, number] // Fix type to tuple
     },
     {
       id: 'board_meetings',
@@ -36,7 +35,7 @@ const GovMetrics = () => {
       step: 1,
       weight: 5,
       idealValue: 6,
-      idealRange: [4, 12]
+      idealRange: [4, 12] as [number, number] // Fix type to tuple
     },
     {
       id: 'ethics_policy',
@@ -61,7 +60,7 @@ const GovMetrics = () => {
       step: 5,
       weight: 7,
       idealValue: 100,
-      idealRange: [90, 100]
+      idealRange: [90, 100] as [number, number] // Fix type to tuple
     },
     {
       id: 'executive_compensation',
@@ -72,7 +71,7 @@ const GovMetrics = () => {
       step: 1,
       weight: 6,
       idealValue: 20,
-      idealRange: [1, 50]
+      idealRange: [1, 50] as [number, number] // Fix type to tuple
     },
     {
       id: 'shareholder_rights',
@@ -83,7 +82,7 @@ const GovMetrics = () => {
       step: 1,
       weight: 7,
       idealValue: 10,
-      idealRange: [7, 10]
+      idealRange: [7, 10] as [number, number] // Fix type to tuple
     },
     {
       id: 'risk_management',
@@ -101,7 +100,7 @@ const GovMetrics = () => {
       step: 1,
       weight: 6,
       idealValue: 2,
-      idealRange: [1, 4]
+      idealRange: [1, 4] as [number, number] // Fix type to tuple
     }
   ];
 

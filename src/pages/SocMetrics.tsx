@@ -1,4 +1,3 @@
-
 import Calculator from '@/components/Calculator';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -14,7 +13,7 @@ const SocMetrics = () => {
       step: 5,
       weight: 8,
       idealValue: 50,
-      idealRange: [40, 60]
+      idealRange: [40, 60] as [number, number] // Fix type to tuple
     },
     {
       id: 'management_diversity',
@@ -25,7 +24,7 @@ const SocMetrics = () => {
       step: 5,
       weight: 8,
       idealValue: 50,
-      idealRange: [40, 60]
+      idealRange: [40, 60] as [number, number] // Fix type to tuple
     },
     {
       id: 'minority_representation',
@@ -36,7 +35,7 @@ const SocMetrics = () => {
       step: 5,
       weight: 8,
       idealValue: 40,
-      idealRange: [30, 70]
+      idealRange: [30, 70] as [number, number] // Fix type to tuple
     },
     {
       id: 'employee_turnover',
@@ -47,7 +46,7 @@ const SocMetrics = () => {
       step: 1,
       weight: 6,
       idealValue: 10,
-      idealRange: [5, 15]
+      idealRange: [5, 15] as [number, number] // Fix type to tuple
     },
     {
       id: 'pay_equity',
@@ -58,7 +57,7 @@ const SocMetrics = () => {
       step: 1,
       weight: 7,
       idealValue: 20,
-      idealRange: [1, 50]
+      idealRange: [1, 50] as [number, number] // Fix type to tuple
     },
     {
       id: 'health_safety',
@@ -69,7 +68,7 @@ const SocMetrics = () => {
       step: 0.1,
       weight: 9,
       idealValue: 0,
-      idealRange: [0, 1]
+      idealRange: [0, 1] as [number, number] // Fix type to tuple
     },
     {
       id: 'community_investment',
@@ -80,7 +79,7 @@ const SocMetrics = () => {
       step: 0.1,
       weight: 6,
       idealValue: 2,
-      idealRange: [1, 5]
+      idealRange: [1, 5] as [number, number] // Fix type to tuple
     },
     {
       id: 'human_rights_policy',
@@ -105,7 +104,7 @@ const SocMetrics = () => {
       step: 1,
       weight: 5,
       idealValue: 40,
-      idealRange: [20, 80]
+      idealRange: [20, 80] as [number, number] // Fix type to tuple
     }
   ];
 

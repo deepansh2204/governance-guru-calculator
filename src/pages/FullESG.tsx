@@ -1,5 +1,6 @@
 
 import { useState } from 'react';
+import React from 'react'; // Add React import
 import { Link } from 'react-router-dom';
 import { ArrowRight, BarChart, ChartPie, Shield, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -23,7 +24,7 @@ const FullESG = () => {
       step: 5,
       weight: 6,
       idealValue: 75,
-      idealRange: [60, 100]
+      idealRange: [60, 100] as [number, number] // Fix type to tuple
     },
     {
       id: 'ethics_policy',
@@ -50,7 +51,7 @@ const FullESG = () => {
       step: 1,
       weight: 6,
       idealValue: 0,
-      idealRange: [0, 100]
+      idealRange: [0, 100] as [number, number] // Fix type to tuple
     },
     {
       id: 'renewable_energy',
@@ -61,7 +62,7 @@ const FullESG = () => {
       step: 5,
       weight: 5,
       idealValue: 100,
-      idealRange: [50, 100]
+      idealRange: [50, 100] as [number, number] // Fix type to tuple
     },
     {
       id: 'environmental_policy',
@@ -81,7 +82,7 @@ const FullESG = () => {
       step: 5,
       weight: 5,
       idealValue: 50,
-      idealRange: [40, 60]
+      idealRange: [40, 60] as [number, number] // Fix type to tuple
     },
     {
       id: 'health_safety',
@@ -92,7 +93,7 @@ const FullESG = () => {
       step: 0.1,
       weight: 6,
       idealValue: 0,
-      idealRange: [0, 1]
+      idealRange: [0, 1] as [number, number] // Fix type to tuple
     },
     {
       id: 'human_rights_policy',
@@ -126,7 +127,7 @@ const FullESG = () => {
       step: 1,
       weight: 5,
       idealValue: 10,
-      idealRange: [7, 10]
+      idealRange: [7, 10] as [number, number] // Fix type to tuple
     }
   ];
   
