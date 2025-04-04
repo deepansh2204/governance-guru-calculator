@@ -29,6 +29,7 @@ export type Question = {
   formula?: string;
   formulaInputs?: string[];
   inputLabels?: string[];
+  scoringScale?: [number, number, number, number, number, number]; // for 0-5 scale mapping
 };
 
 export type CalculatorProps = {
@@ -45,6 +46,7 @@ const Calculator = ({ title, description, type, questions }: CalculatorProps) =>
   const [answers, setAnswers] = useState<Record<string, number>>({});
   const [formulaInputValues, setFormulaInputValues] = useState<Record<string, Record<string, number>>>({});
   const [score, setScore] = useState(0);
+  const [scoreDetails, setScoreDetails] = useState<Record<string, { rawValue: number, score: number }>>({});
   
   const totalSteps = questions.length;
   const progress = (currentStep / totalSteps) * 100;
@@ -55,6 +57,7 @@ const Calculator = ({ title, description, type, questions }: CalculatorProps) =>
     setAnswers({});
     setFormulaInputValues({});
     setCompleted(false);
+    setScoreDetails({});
   };
   
   const handleAnswer = (value: number) => {
@@ -62,6 +65,94 @@ const Calculator = ({ title, description, type, questions }: CalculatorProps) =>
       ...answers,
       [questions[currentStep].id]: value,
     });
+  };
+
+  // Map a raw value to a 0-5 score based on the question's scoring scale
+  const mapValueToScore = (questionId: string, rawValue: number): number => {
+    const question = questions.find(q => q.id === questionId);
+    if (!question) return 0;
+    
+    // Default scoring based on the question type and ranges
+    switch (questionId) {
+      case 'ethical_business_conduct': // % completion of AI compliance checks
+        // 0: Not implemented, 5: Fully integrated & real-time
+        if (rawValue <= 0) return 0;
+        if (rawValue < 20) return 1;
+        if (rawValue < 40) return 2;
+        if (rawValue < 60) return 3;
+        if (rawValue < 80) return 4;
+        return 5; // >= 80%
+        
+      case 'board_composition': // % of Independent & diverse members
+        // 0: <20%, 5: >60% diverse and independent
+        if (rawValue < 20) return 0;
+        if (rawValue < 30) return 1;
+        if (rawValue < 40) return 2;
+        if (rawValue < 50) return 3;
+        if (rawValue <= 60) return 4;
+        return 5; // > 60%
+        
+      case 'shareholder_rights': // No. of digital disclosures/quarter
+        // 0: <1, 5: >4 per quarter, real-time enabled
+        if (rawValue < 1) return 0;
+        if (rawValue === 1) return 1;
+        if (rawValue === 2) return 2;
+        if (rawValue === 3) return 3;
+        if (rawValue === 4) return 4;
+        return 5; // > 4
+        
+      case 'risk_management': // Frequency of AI risk assessments/year
+        // 0: None, 5: Monthly automated reviews (which would be 12/year)
+        if (rawValue <= 0) return 0;
+        if (rawValue <= 2) return 1; // Quarterly
+        if (rawValue <= 4) return 2; // Bi-monthly
+        if (rawValue <= 6) return 3; // Every other month
+        if (rawValue < 12) return 4; // Almost monthly
+        return 5; // Monthly (12) or more
+        
+      case 'whistleblower_mechanism': // % of cases resolved transparently
+        // 0: None, 5: >10/year with third-party validation
+        // Note: This doesn't match your percentage formula, adjusting to use % resolved
+        if (rawValue <= 0) return 0;
+        if (rawValue < 20) return 1;
+        if (rawValue < 40) return 2;
+        if (rawValue < 60) return 3;
+        if (rawValue < 80) return 4;
+        return 5; // >= 80%
+        
+      case 'stakeholder_engagement': // Engagements verified via blockchain/year
+        // 0: None, 5: Continuous disclosure system
+        if (rawValue <= 0) return 0;
+        if (rawValue <= 3) return 1;
+        if (rawValue <= 6) return 2;
+        if (rawValue <= 10) return 3;
+        if (rawValue <= 15) return 4;
+        return 5; // > 15 per year = continuous
+        
+      case 'esg_oversight': // % automation in ESG compliance
+        // 0: Manual, 5: Fully automated monitoring
+        if (rawValue <= 0) return 0;
+        if (rawValue < 20) return 1;
+        if (rawValue < 40) return 2;
+        if (rawValue < 60) return 3;
+        if (rawValue < 80) return 4;
+        return 5; // >= 80%
+        
+      case 'data_security': // Combined measure of breaches and security level
+        // 0: Frequent breaches, 5: Zero with AI-level 5
+        // This is already normalized to 0-5 by the formula
+        return Math.min(5, Math.max(0, rawValue));
+        
+      default:
+        // If no specific mapping is defined, normalize to 0-5 scale
+        if (question.min !== undefined && question.max !== undefined) {
+          const range = question.max - question.min;
+          if (range <= 0) return 0;
+          const normalizedValue = (rawValue - question.min) / range;
+          return Math.min(5, Math.max(0, normalizedValue * 5));
+        }
+        return 0;
+    }
   };
 
   const handleFormulaInputChange = (questionId: string, inputKey: string, value: number) => {
@@ -120,9 +211,9 @@ const Calculator = ({ title, description, type, questions }: CalculatorProps) =>
             break;
           case 'data_security':
             // [(1 - (Data Breaches / Total Attempts)) × (AI Security Level / 5)] × 5
-            const breachRatio = inputValues.breaches > 0 ? 
+            const breachRatio = inputValues.breaches > 0 && inputValues.attempts > 0 ? 
               1 - (inputValues.breaches / inputValues.attempts) : 1;
-            calculatedValue = breachRatio * inputValues.securityLevel;
+            calculatedValue = breachRatio * (inputValues.securityLevel / 5) * 5;
             break;
           default:
             break;
@@ -137,6 +228,16 @@ const Calculator = ({ title, description, type, questions }: CalculatorProps) =>
         setAnswers({
           ...answers,
           [questionId]: calculatedValue
+        });
+
+        // Store score details for this question
+        const mappedScore = mapValueToScore(questionId, calculatedValue);
+        setScoreDetails({
+          ...scoreDetails,
+          [questionId]: { 
+            rawValue: calculatedValue,
+            score: mappedScore
+          }
         });
       }
     }
@@ -161,41 +262,32 @@ const Calculator = ({ title, description, type, questions }: CalculatorProps) =>
     let totalScore = 0;
     let totalWeight = 0;
     
+    // First calculate the 0-5 score for each question
+    const newScoreDetails: Record<string, { rawValue: number, score: number }> = {};
+    
     questions.forEach(question => {
-      const answer = answers[question.id] || 0;
+      const rawValue = answers[question.id] || 0;
+      const mappedScore = mapValueToScore(question.id, rawValue);
+      
+      newScoreDetails[question.id] = {
+        rawValue,
+        score: mappedScore
+      };
+      
+      // Apply weight to the 0-5 score (not the raw value)
       const weight = question.weight;
       totalWeight += weight;
-      
-      let questionScore = 0;
-      
-      if (question.type === 'boolean') {
-        // For boolean questions, if the answer is 1 (true) and the idealValue is 1, 
-        // give full points, otherwise 0
-        questionScore = (answer === question.idealValue) ? weight : 0;
-      } else if (question.idealRange) {
-        // For range-based questions - STRICT: only award points if within range
-        const [min, max] = question.idealRange;
-        if (answer >= min && answer <= max) {
-          // Calculate proportional score within the ideal range
-          const rangeSize = max - min;
-          const positionInRange = answer - min;
-          const proportionInRange = rangeSize > 0 ? positionInRange / rangeSize : 1;
-          questionScore = weight * (0.7 + (proportionInRange * 0.3)); // At least 70% of weight if in range
-        } else {
-          // No points if outside ideal range
-          questionScore = 0;
-        }
-      } else if (question.idealValue !== undefined) {
-        // For value-based questions - STRICT: only award full points for exact match
-        questionScore = (answer === question.idealValue) ? weight : 0;
-      }
-      
-      totalScore += questionScore;
+      totalScore += mappedScore * weight;
     });
     
-    // Normalize to 0-100 scale
-    const finalScore = (totalWeight > 0) ? (totalScore / totalWeight) * 100 : 0;
-    setScore(Math.round(finalScore));
+    setScoreDetails(newScoreDetails);
+    
+    // Calculate final score (0-100 scale)
+    // Maximum possible score is 5 * totalWeight (since each score is 0-5)
+    const maxPossibleScore = 5 * totalWeight;
+    const normalizedScore = (maxPossibleScore > 0) ? (totalScore / maxPossibleScore) * 100 : 0;
+    
+    setScore(Math.round(normalizedScore));
   };
   
   const getScoreColor = () => {
@@ -208,6 +300,15 @@ const Calculator = ({ title, description, type, questions }: CalculatorProps) =>
     if (score >= 80) return 'Excellent! Your organization is demonstrating strong ESG practices.';
     if (score >= 60) return 'Good progress. There are opportunities to enhance your ESG performance.';
     return 'Needs improvement. Consider focusing on the areas highlighted below.';
+  };
+
+  const getScoreText = (score: number): string => {
+    if (score >= 4.5) return 'Excellent (5)';
+    if (score >= 3.5) return 'Very Good (4)';
+    if (score >= 2.5) return 'Good (3)';
+    if (score >= 1.5) return 'Fair (2)';
+    if (score >= 0.5) return 'Poor (1)';
+    return 'Not Implemented (0)';
   };
   
   const renderFormulaInputs = (question: Question) => {
@@ -242,6 +343,12 @@ const Calculator = ({ title, description, type, questions }: CalculatorProps) =>
               <span className="text-sm font-medium">Calculated Result:</span>
               <span className="text-lg font-bold">{Math.round(answers[question.id] * 100) / 100}</span>
             </div>
+            {scoreDetails[question.id] && (
+              <div className="flex justify-between items-center mt-1">
+                <span className="text-sm font-medium">Mapped Score (0-5):</span>
+                <span className="text-lg font-bold">{scoreDetails[question.id].score} - {getScoreText(scoreDetails[question.id].score)}</span>
+              </div>
+            )}
             <p className="text-xs text-muted-foreground mt-1">
               Formula: {question.formula}
             </p>
@@ -361,24 +468,18 @@ const Calculator = ({ title, description, type, questions }: CalculatorProps) =>
         <div className="space-y-4">
           <h4 className="font-medium">Score Breakdown</h4>
           {questions.map((question) => {
-            const answer = answers[question.id] || 0;
-            const hasIdealValue = question.idealValue !== undefined;
-            const hasIdealRange = question.idealRange !== undefined;
+            const details = scoreDetails[question.id];
+            const rawValue = details ? details.rawValue : (answers[question.id] || 0);
+            const mappedScore = details ? details.score : mapValueToScore(question.id, rawValue);
             
-            let status = 'neutral';
-            if (hasIdealValue && answer === question.idealValue) {
-              status = 'good';
-            } else if (hasIdealRange && answer >= question.idealRange[0] && answer <= question.idealRange[1]) {
-              status = 'good';
-            } else if ((hasIdealValue || hasIdealRange) && answer !== 0) {
-              status = 'warning';
-            }
+            // Determine color based on the 0-5 score
+            const status = mappedScore >= 4 ? 'good' : mappedScore >= 2 ? 'warning' : 'poor';
             
             return (
               <div key={question.id} className="p-4 bg-slate-50 rounded-lg">
                 <div className="flex justify-between">
                   <div className="flex-1">
-                    <p className="text-sm">{question.text}</p>
+                    <p className="text-sm font-medium">{question.text}</p>
                     {question.description && (
                       <p className="text-xs text-muted-foreground mt-1">{question.description}</p>
                     )}
@@ -386,15 +487,22 @@ const Calculator = ({ title, description, type, questions }: CalculatorProps) =>
                       <p className="text-xs text-muted-foreground mt-1">Formula: {question.formula}</p>
                     )}
                   </div>
-                  <div className="flex items-center gap-2 ml-4">
-                    <span className="text-sm font-medium">{Math.round(answer * 100) / 100}</span>
-                    <span 
-                      className={`w-3 h-3 rounded-full ${
-                        status === 'good' ? 'bg-green-500' : 
-                        status === 'warning' ? 'bg-yellow-500' : 
-                        'bg-slate-300'
-                      }`}
-                    ></span>
+                  <div className="flex flex-col items-end ml-4">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs text-muted-foreground">Raw:</span>
+                      <span className="text-sm">{Math.round(rawValue * 100) / 100}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs text-muted-foreground">Score:</span>
+                      <span className="text-sm font-medium">{mappedScore}/5</span>
+                      <span 
+                        className={`w-3 h-3 rounded-full ${
+                          status === 'good' ? 'bg-green-500' : 
+                          status === 'warning' ? 'bg-yellow-500' : 
+                          'bg-red-500'
+                        }`}
+                      ></span>
+                    </div>
                   </div>
                 </div>
               </div>
