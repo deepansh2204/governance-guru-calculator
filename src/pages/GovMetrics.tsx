@@ -7,7 +7,7 @@ const GovMetrics = () => {
   const govQuestions = [
     {
       id: 'ethical_business_conduct',
-      text: 'What percentage completion of AI compliance checks does your organization have?',
+      text: 'Ethical Business Conduct: AI Compliance Checks',
       type: 'slider' as const,
       min: 0,
       max: 100,
@@ -15,11 +15,14 @@ const GovMetrics = () => {
       weight: 10,
       idealValue: 100,
       idealRange: [80, 100] as [number, number],
-      description: 'Measures integrity adherence via automated detection'
+      description: 'Measures integrity adherence via automated detection',
+      formula: '(Completed AI Compliance Checks / Total Scheduled Checks) × 100',
+      formulaInputs: ['completed', 'total'],
+      inputLabels: ['Completed AI Compliance Checks', 'Total Scheduled Checks']
     },
     {
       id: 'board_composition',
-      text: 'What percentage of your board consists of independent & diverse members?',
+      text: 'Board Composition & Independence',
       type: 'slider' as const,
       min: 0,
       max: 100,
@@ -27,11 +30,14 @@ const GovMetrics = () => {
       weight: 10,
       idealValue: 60,
       idealRange: [60, 100] as [number, number],
-      description: 'Indicates impartiality & inclusivity in leadership'
+      description: 'Indicates impartiality & inclusivity in leadership',
+      formula: '(No. of Independent & Diverse Directors / Total Board Members) × 100',
+      formulaInputs: ['independent', 'total'],
+      inputLabels: ['No. of Independent & Diverse Directors', 'Total Board Members']
     },
     {
       id: 'shareholder_rights',
-      text: 'How many digital governance disclosures does your organization provide per quarter?',
+      text: 'Shareholder Rights & Transparency',
       type: 'numeric' as const,
       min: 0,
       max: 10,
@@ -39,11 +45,14 @@ const GovMetrics = () => {
       weight: 8,
       idealValue: 4,
       idealRange: [4, 10] as [number, number],
-      description: 'Evaluates shareholder involvement & access'
+      description: 'Evaluates shareholder involvement & access',
+      formula: 'Total Digital Governance Disclosures / Quarter',
+      formulaInputs: ['disclosures'],
+      inputLabels: ['Digital Governance Disclosures per Quarter']
     },
     {
       id: 'risk_management',
-      text: 'How many AI risk assessments does your organization conduct per year?',
+      text: 'Risk Management & Internal Controls',
       type: 'numeric' as const,
       min: 0,
       max: 12,
@@ -51,11 +60,14 @@ const GovMetrics = () => {
       weight: 8,
       idealValue: 12,
       idealRange: [4, 12] as [number, number],
-      description: 'Assesses proactive risk monitoring systems'
+      description: 'Assesses proactive risk monitoring systems',
+      formula: 'Total AI Risk Assessments Conducted / Year',
+      formulaInputs: ['assessments'],
+      inputLabels: ['AI Risk Assessments per Year']
     },
     {
       id: 'whistleblower_mechanism',
-      text: 'What percentage of whistleblower cases are resolved with independent review?',
+      text: 'Whistleblower Mechanism',
       type: 'slider' as const,
       min: 0,
       max: 100,
@@ -63,11 +75,14 @@ const GovMetrics = () => {
       weight: 9,
       idealValue: 100,
       idealRange: [80, 100] as [number, number],
-      description: 'Tracks functional reporting & ethical culture'
+      description: 'Tracks functional reporting & ethical culture',
+      formula: '(Whistleblower Cases Resolved with Independent Review / Total Cases) × 100',
+      formulaInputs: ['resolved', 'total'],
+      inputLabels: ['Cases Resolved with Independent Review', 'Total Whistleblower Cases']
     },
     {
       id: 'stakeholder_engagement',
-      text: 'How many verified blockchain reports does your organization publish per year?',
+      text: 'Stakeholder Engagement',
       type: 'numeric' as const,
       min: 0,
       max: 20,
@@ -75,11 +90,14 @@ const GovMetrics = () => {
       weight: 7,
       idealValue: 12,
       idealRange: [6, 20] as [number, number],
-      description: 'Gauges stakeholder inclusion and auditability'
+      description: 'Gauges stakeholder inclusion and auditability',
+      formula: 'No. of Verified Blockchain Reports / Year',
+      formulaInputs: ['reports'],
+      inputLabels: ['Verified Blockchain Reports per Year']
     },
     {
       id: 'esg_oversight',
-      text: 'What percentage of ESG compliance tasks are automated in your organization?',
+      text: 'ESG Oversight & Compliance',
       type: 'slider' as const,
       min: 0,
       max: 100,
@@ -87,11 +105,14 @@ const GovMetrics = () => {
       weight: 9,
       idealValue: 100,
       idealRange: [70, 100] as [number, number],
-      description: 'Monitors dynamic ESG governance responsiveness'
+      description: 'Monitors dynamic ESG governance responsiveness',
+      formula: '(Automated Compliance Tasks / Total ESG Tasks) × 100',
+      formulaInputs: ['automated', 'total'],
+      inputLabels: ['Automated Compliance Tasks', 'Total ESG Tasks']
     },
     {
       id: 'data_security',
-      text: 'Rate your organization\'s data security level (considering breaches and AI security coverage)',
+      text: 'Data Security & Privacy',
       type: 'slider' as const,
       min: 1,
       max: 5,
@@ -99,7 +120,10 @@ const GovMetrics = () => {
       weight: 10,
       idealValue: 5,
       idealRange: [4, 5] as [number, number],
-      description: 'Ensures integrity of corporate data governance'
+      description: 'Ensures integrity of corporate data governance',
+      formula: '[(1 - (Data Breaches / Total Attempts)) × (AI Security Level / 5)] × 5',
+      formulaInputs: ['breaches', 'attempts', 'securityLevel'],
+      inputLabels: ['Number of Data Breaches', 'Total Attempted Breaches', 'AI Security Level (1-5)']
     }
   ];
 

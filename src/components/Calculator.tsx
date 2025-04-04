@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
@@ -25,6 +26,9 @@ export type Question = {
   idealValue?: number;
   idealRange?: [number, number];
   description?: string;
+  formula?: string;
+  formulaInputs?: string[];
+  inputLabels?: string[];
 };
 
 export type CalculatorProps = {
@@ -39,6 +43,7 @@ const Calculator = ({ title, description, type, questions }: CalculatorProps) =>
   const [started, setStarted] = useState(false);
   const [completed, setCompleted] = useState(false);
   const [answers, setAnswers] = useState<Record<string, number>>({});
+  const [formulaInputValues, setFormulaInputValues] = useState<Record<string, Record<string, number>>>({});
   const [score, setScore] = useState(0);
   
   const totalSteps = questions.length;
@@ -48,6 +53,7 @@ const Calculator = ({ title, description, type, questions }: CalculatorProps) =>
     setStarted(true);
     setCurrentStep(0);
     setAnswers({});
+    setFormulaInputValues({});
     setCompleted(false);
   };
   
@@ -56,6 +62,84 @@ const Calculator = ({ title, description, type, questions }: CalculatorProps) =>
       ...answers,
       [questions[currentStep].id]: value,
     });
+  };
+
+  const handleFormulaInputChange = (questionId: string, inputKey: string, value: number) => {
+    setFormulaInputValues({
+      ...formulaInputValues,
+      [questionId]: {
+        ...(formulaInputValues[questionId] || {}),
+        [inputKey]: value
+      }
+    });
+
+    // Calculate the answer based on formula inputs
+    const question = questions.find(q => q.id === questionId);
+    if (question?.formula && question.formulaInputs) {
+      const inputValues = {
+        ...(formulaInputValues[questionId] || {}),
+        [inputKey]: value
+      };
+      
+      // Only calculate if all formula inputs have values
+      const allInputsProvided = question.formulaInputs.every(
+        input => inputValues[input] !== undefined
+      );
+      
+      if (allInputsProvided) {
+        let calculatedValue = 0;
+        
+        switch (questionId) {
+          case 'ethical_business_conduct':
+            // (Completed AI Compliance Checks / Total Scheduled Checks) × 100
+            calculatedValue = (inputValues.completed / inputValues.total) * 100;
+            break;
+          case 'board_composition':
+            // (No. of Independent & Diverse Directors / Total Board Members) × 100
+            calculatedValue = (inputValues.independent / inputValues.total) * 100;
+            break;
+          case 'shareholder_rights':
+            // Total Digital Governance Disclosures / Quarter
+            calculatedValue = inputValues.disclosures;
+            break;
+          case 'risk_management':
+            // Total AI Risk Assessments Conducted / Year
+            calculatedValue = inputValues.assessments;
+            break;
+          case 'whistleblower_mechanism':
+            // (Whistleblower Cases Resolved with Independent Review / Total Cases) × 100
+            calculatedValue = (inputValues.resolved / inputValues.total) * 100;
+            break;
+          case 'stakeholder_engagement':
+            // No. of Verified Blockchain Reports / Year
+            calculatedValue = inputValues.reports;
+            break;
+          case 'esg_oversight':
+            // (Automated Compliance Tasks / Total ESG Tasks) × 100
+            calculatedValue = (inputValues.automated / inputValues.total) * 100;
+            break;
+          case 'data_security':
+            // [(1 - (Data Breaches / Total Attempts)) × (AI Security Level / 5)] × 5
+            const breachRatio = inputValues.breaches > 0 ? 
+              1 - (inputValues.breaches / inputValues.attempts) : 1;
+            calculatedValue = breachRatio * inputValues.securityLevel;
+            break;
+          default:
+            break;
+        }
+        
+        // Ensure the calculated value is within bounds
+        if (question.min !== undefined && question.max !== undefined) {
+          calculatedValue = Math.max(question.min, Math.min(calculatedValue, question.max));
+        }
+        
+        // Update the answer with the calculated value
+        setAnswers({
+          ...answers,
+          [questionId]: calculatedValue
+        });
+      }
+    }
   };
   
   const handleNext = () => {
@@ -89,22 +173,21 @@ const Calculator = ({ title, description, type, questions }: CalculatorProps) =>
         // give full points, otherwise 0
         questionScore = (answer === question.idealValue) ? weight : 0;
       } else if (question.idealRange) {
-        // For range-based questions
+        // For range-based questions - STRICT: only award points if within range
         const [min, max] = question.idealRange;
         if (answer >= min && answer <= max) {
-          questionScore = weight;
+          // Calculate proportional score within the ideal range
+          const rangeSize = max - min;
+          const positionInRange = answer - min;
+          const proportionInRange = rangeSize > 0 ? positionInRange / rangeSize : 1;
+          questionScore = weight * (0.7 + (proportionInRange * 0.3)); // At least 70% of weight if in range
         } else {
-          // Calculate partial score based on how far the answer is from the ideal range
-          const closestBound = answer < min ? min : max;
-          const distance = Math.abs(answer - closestBound);
-          const maxDistance = question.max ? question.max - question.min! : 10;
-          questionScore = weight * (1 - Math.min(distance / maxDistance, 1));
+          // No points if outside ideal range
+          questionScore = 0;
         }
       } else if (question.idealValue !== undefined) {
-        // For value-based questions
-        const maxDifference = question.max ? question.max - question.min! : 10;
-        const difference = Math.abs(answer - question.idealValue);
-        questionScore = weight * (1 - Math.min(difference / maxDifference, 1));
+        // For value-based questions - STRICT: only award full points for exact match
+        questionScore = (answer === question.idealValue) ? weight : 0;
       }
       
       totalScore += questionScore;
@@ -125,6 +208,47 @@ const Calculator = ({ title, description, type, questions }: CalculatorProps) =>
     if (score >= 80) return 'Excellent! Your organization is demonstrating strong ESG practices.';
     if (score >= 60) return 'Good progress. There are opportunities to enhance your ESG performance.';
     return 'Needs improvement. Consider focusing on the areas highlighted below.';
+  };
+  
+  const renderFormulaInputs = (question: Question) => {
+    if (!question.formulaInputs || !question.inputLabels) return null;
+    
+    return (
+      <div className="space-y-3 mt-4">
+        <p className="text-sm font-medium">Enter values to calculate:</p>
+        {question.formulaInputs.map((inputKey, index) => {
+          const label = question.inputLabels?.[index] || inputKey;
+          return (
+            <div key={inputKey} className="flex items-center gap-2">
+              <label className="text-sm w-full max-w-[200px]">{label}:</label>
+              <Input
+                type="number"
+                min={0}
+                value={(formulaInputValues[question.id]?.[inputKey] || 0).toString()}
+                onChange={(e) => handleFormulaInputChange(
+                  question.id, 
+                  inputKey, 
+                  parseFloat(e.target.value) || 0
+                )}
+                className="max-w-[150px]"
+              />
+            </div>
+          );
+        })}
+
+        {answers[question.id] !== undefined && (
+          <div className="mt-3 p-3 bg-slate-50 rounded-md">
+            <div className="flex justify-between items-center">
+              <span className="text-sm font-medium">Calculated Result:</span>
+              <span className="text-lg font-bold">{Math.round(answers[question.id] * 100) / 100}</span>
+            </div>
+            <p className="text-xs text-muted-foreground mt-1">
+              Formula: {question.formula}
+            </p>
+          </div>
+        )}
+      </div>
+    );
   };
   
   const renderQuestion = () => {
@@ -151,65 +275,71 @@ const Calculator = ({ title, description, type, questions }: CalculatorProps) =>
           )}
         </div>
         
-        {question.type === 'numeric' && (
-          <div className="space-y-2">
-            <Input 
-              type="number"
-              min={question.min}
-              max={question.max}
-              step={question.step || 1}
-              value={currentAnswer}
-              onChange={(e) => handleAnswer(parseFloat(e.target.value))}
-              className="w-full"
-            />
-            {question.min !== undefined && question.max !== undefined && (
-              <div className="flex justify-between text-xs text-muted-foreground">
-                <span>Min: {question.min}</span>
-                <span>Max: {question.max}</span>
+        {question.formula ? (
+          renderFormulaInputs(question)
+        ) : (
+          <>
+            {question.type === 'numeric' && (
+              <div className="space-y-2">
+                <Input 
+                  type="number"
+                  min={question.min}
+                  max={question.max}
+                  step={question.step || 1}
+                  value={currentAnswer}
+                  onChange={(e) => handleAnswer(parseFloat(e.target.value))}
+                  className="w-full"
+                />
+                {question.min !== undefined && question.max !== undefined && (
+                  <div className="flex justify-between text-xs text-muted-foreground">
+                    <span>Min: {question.min}</span>
+                    <span>Max: {question.max}</span>
+                  </div>
+                )}
               </div>
             )}
-          </div>
-        )}
-        
-        {question.type === 'slider' && (
-          <div className="space-y-6">
-            <Slider
-              min={question.min || 0}
-              max={question.max || 10}
-              step={question.step || 1}
-              value={[currentAnswer]}
-              onValueChange={(values) => handleAnswer(values[0])}
-            />
-            <div className="flex justify-between text-sm">
-              <span>{question.min || 0}</span>
-              <span className="font-medium">{currentAnswer}</span>
-              <span>{question.max || 10}</span>
-            </div>
-            {question.idealRange && (
-              <div className="text-xs text-muted-foreground text-center">
-                Ideal range: {question.idealRange[0]} - {question.idealRange[1]}
+            
+            {question.type === 'slider' && (
+              <div className="space-y-6">
+                <Slider
+                  min={question.min || 0}
+                  max={question.max || 10}
+                  step={question.step || 1}
+                  value={[currentAnswer]}
+                  onValueChange={(values) => handleAnswer(values[0])}
+                />
+                <div className="flex justify-between text-sm">
+                  <span>{question.min || 0}</span>
+                  <span className="font-medium">{currentAnswer}</span>
+                  <span>{question.max || 10}</span>
+                </div>
+                {question.idealRange && (
+                  <div className="text-xs text-muted-foreground text-center">
+                    Ideal range: {question.idealRange[0]} - {question.idealRange[1]}
+                  </div>
+                )}
               </div>
             )}
-          </div>
-        )}
-        
-        {question.type === 'boolean' && (
-          <div className="flex justify-center gap-4">
-            <Button 
-              variant={currentAnswer === 0 ? "default" : "outline"}
-              onClick={() => handleAnswer(0)}
-              className="w-32"
-            >
-              No
-            </Button>
-            <Button 
-              variant={currentAnswer === 1 ? "default" : "outline"}
-              onClick={() => handleAnswer(1)}
-              className="w-32"
-            >
-              Yes
-            </Button>
-          </div>
+            
+            {question.type === 'boolean' && (
+              <div className="flex justify-center gap-4">
+                <Button 
+                  variant={currentAnswer === 0 ? "default" : "outline"}
+                  onClick={() => handleAnswer(0)}
+                  className="w-32"
+                >
+                  No
+                </Button>
+                <Button 
+                  variant={currentAnswer === 1 ? "default" : "outline"}
+                  onClick={() => handleAnswer(1)}
+                  className="w-32"
+                >
+                  Yes
+                </Button>
+              </div>
+            )}
+          </>
         )}
       </div>
     );
@@ -252,9 +382,12 @@ const Calculator = ({ title, description, type, questions }: CalculatorProps) =>
                     {question.description && (
                       <p className="text-xs text-muted-foreground mt-1">{question.description}</p>
                     )}
+                    {question.formula && (
+                      <p className="text-xs text-muted-foreground mt-1">Formula: {question.formula}</p>
+                    )}
                   </div>
                   <div className="flex items-center gap-2 ml-4">
-                    <span className="text-sm font-medium">{answer}</span>
+                    <span className="text-sm font-medium">{Math.round(answer * 100) / 100}</span>
                     <span 
                       className={`w-3 h-3 rounded-full ${
                         status === 'good' ? 'bg-green-500' : 
@@ -354,7 +487,14 @@ const Calculator = ({ title, description, type, questions }: CalculatorProps) =>
           >
             Previous
           </Button>
-          <Button onClick={handleNext}>
+          <Button 
+            onClick={handleNext}
+            disabled={
+              questions[currentStep]?.formula &&
+              questions[currentStep]?.formulaInputs &&
+              !answers[questions[currentStep].id]
+            }
+          >
             {currentStep === totalSteps - 1 ? 'Complete' : 'Next'}
           </Button>
         </CardFooter>
