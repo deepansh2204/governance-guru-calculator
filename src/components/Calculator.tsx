@@ -29,7 +29,7 @@ export type Question = {
   formula?: string;
   formulaInputs?: string[];
   inputLabels?: string[];
-  scoringScale?: [number, number, number, number, number, number]; // for 0-5 scale mapping
+  scoringScale?: number[]; // Changed from tuple to array to allow flexibility
 };
 
 export type CalculatorProps = {
