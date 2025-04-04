@@ -1,3 +1,4 @@
+
 import Calculator from '@/components/Calculator';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -5,102 +6,100 @@ import Footer from '@/components/Footer';
 const GovMetrics = () => {
   const govQuestions = [
     {
-      id: 'board_independence',
-      text: 'What percentage of your board members are independent directors?',
+      id: 'ethical_business_conduct',
+      text: 'What percentage completion of AI compliance checks does your organization have?',
       type: 'slider' as const,
       min: 0,
       max: 100,
       step: 5,
       weight: 10,
-      idealValue: 75,
-      idealRange: [60, 100] as [number, number] // Fix type to tuple
+      idealValue: 100,
+      idealRange: [80, 100] as [number, number],
+      description: 'Measures integrity adherence via automated detection'
     },
     {
-      id: 'board_diversity',
-      text: 'What percentage of your board members represent gender diversity?',
+      id: 'board_composition',
+      text: 'What percentage of your board consists of independent & diverse members?',
       type: 'slider' as const,
       min: 0,
       max: 100,
       step: 5,
-      weight: 8,
-      idealValue: 50,
-      idealRange: [40, 60] as [number, number] // Fix type to tuple
+      weight: 10,
+      idealValue: 60,
+      idealRange: [60, 100] as [number, number],
+      description: 'Indicates impartiality & inclusivity in leadership'
     },
     {
-      id: 'board_meetings',
-      text: 'How many board meetings are held annually?',
+      id: 'shareholder_rights',
+      text: 'How many digital governance disclosures does your organization provide per quarter?',
+      type: 'numeric' as const,
+      min: 0,
+      max: 10,
+      step: 1,
+      weight: 8,
+      idealValue: 4,
+      idealRange: [4, 10] as [number, number],
+      description: 'Evaluates shareholder involvement & access'
+    },
+    {
+      id: 'risk_management',
+      text: 'How many AI risk assessments does your organization conduct per year?',
+      type: 'numeric' as const,
+      min: 0,
+      max: 12,
+      step: 1,
+      weight: 8,
+      idealValue: 12,
+      idealRange: [4, 12] as [number, number],
+      description: 'Assesses proactive risk monitoring systems'
+    },
+    {
+      id: 'whistleblower_mechanism',
+      text: 'What percentage of whistleblower cases are resolved with independent review?',
+      type: 'slider' as const,
+      min: 0,
+      max: 100,
+      step: 5,
+      weight: 9,
+      idealValue: 100,
+      idealRange: [80, 100] as [number, number],
+      description: 'Tracks functional reporting & ethical culture'
+    },
+    {
+      id: 'stakeholder_engagement',
+      text: 'How many verified blockchain reports does your organization publish per year?',
       type: 'numeric' as const,
       min: 0,
       max: 20,
       step: 1,
-      weight: 5,
-      idealValue: 6,
-      idealRange: [4, 12] as [number, number] // Fix type to tuple
+      weight: 7,
+      idealValue: 12,
+      idealRange: [6, 20] as [number, number],
+      description: 'Gauges stakeholder inclusion and auditability'
     },
     {
-      id: 'ethics_policy',
-      text: 'Does your organization have a documented code of ethics or conduct?',
-      type: 'boolean' as const,
-      weight: 10,
-      idealValue: 1
-    },
-    {
-      id: 'whistleblower_protection',
-      text: 'Does your organization have whistleblower protection policies?',
-      type: 'boolean' as const,
-      weight: 8,
-      idealValue: 1
-    },
-    {
-      id: 'ethics_training',
-      text: 'What percentage of employees receive ethics training annually?',
+      id: 'esg_oversight',
+      text: 'What percentage of ESG compliance tasks are automated in your organization?',
       type: 'slider' as const,
       min: 0,
       max: 100,
       step: 5,
-      weight: 7,
+      weight: 9,
       idealValue: 100,
-      idealRange: [90, 100] as [number, number] // Fix type to tuple
+      idealRange: [70, 100] as [number, number],
+      description: 'Monitors dynamic ESG governance responsiveness'
     },
     {
-      id: 'executive_compensation',
-      text: 'What is the ratio of CEO compensation to median employee salary?',
-      type: 'numeric' as const,
-      min: 1,
-      max: 500,
-      step: 1,
-      weight: 6,
-      idealValue: 20,
-      idealRange: [1, 50] as [number, number] // Fix type to tuple
-    },
-    {
-      id: 'shareholder_rights',
-      text: 'On a scale of 1-10, how would you rate your organization\'s shareholder voting rights policies?',
+      id: 'data_security',
+      text: 'Rate your organization\'s data security level (considering breaches and AI security coverage)',
       type: 'slider' as const,
       min: 1,
-      max: 10,
+      max: 5,
       step: 1,
-      weight: 7,
-      idealValue: 10,
-      idealRange: [7, 10] as [number, number] // Fix type to tuple
-    },
-    {
-      id: 'risk_management',
-      text: 'Does your organization have a formal risk management framework?',
-      type: 'boolean' as const,
-      weight: 8,
-      idealValue: 1
-    },
-    {
-      id: 'compliance_audits',
-      text: 'How many external compliance audits are conducted annually?',
-      type: 'numeric' as const,
-      min: 0,
-      max: 10,
-      step: 1,
-      weight: 6,
-      idealValue: 2,
-      idealRange: [1, 4] as [number, number] // Fix type to tuple
+      weight: 10,
+      idealValue: 5,
+      idealRange: [4, 5] as [number, number],
+      description: 'Ensures integrity of corporate data governance'
     }
   ];
 
@@ -125,7 +124,7 @@ const GovMetrics = () => {
           
           <Calculator 
             title="Governance Assessment"
-            description="Evaluate your organization's governance practices, including board structure, ethics policies, and compliance frameworks."
+            description="Evaluate your organization's governance practices using our data-driven framework focused on ethics, board composition, risk management, and stakeholder engagement."
             type="gov"
             questions={govQuestions}
           />

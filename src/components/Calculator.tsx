@@ -12,6 +12,8 @@ import {
   CardHeader, 
   CardTitle 
 } from '@/components/ui/card';
+import { InfoCircle } from 'lucide-react';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 export type Question = {
   id: string;
@@ -23,6 +25,7 @@ export type Question = {
   weight: number;
   idealValue?: number;
   idealRange?: [number, number];
+  description?: string;
 };
 
 export type CalculatorProps = {
@@ -133,7 +136,21 @@ const Calculator = ({ title, description, type, questions }: CalculatorProps) =>
     
     return (
       <div className="space-y-6 animate-fade-in">
-        <h3 className="text-xl font-medium">{question.text}</h3>
+        <div className="flex items-start gap-2">
+          <h3 className="text-xl font-medium flex-1">{question.text}</h3>
+          {question.description && (
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger>
+                  <InfoCircle className="h-5 w-5 text-muted-foreground" />
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p className="max-w-xs">{question.description}</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          )}
+        </div>
         
         {question.type === 'numeric' && (
           <div className="space-y-2">
@@ -169,6 +186,11 @@ const Calculator = ({ title, description, type, questions }: CalculatorProps) =>
               <span className="font-medium">{currentAnswer}</span>
               <span>{question.max || 10}</span>
             </div>
+            {question.idealRange && (
+              <div className="text-xs text-muted-foreground text-center">
+                Ideal range: {question.idealRange[0]} - {question.idealRange[1]}
+              </div>
+            )}
           </div>
         )}
         
@@ -226,8 +248,13 @@ const Calculator = ({ title, description, type, questions }: CalculatorProps) =>
             return (
               <div key={question.id} className="p-4 bg-slate-50 rounded-lg">
                 <div className="flex justify-between">
-                  <p className="text-sm">{question.text}</p>
-                  <div className="flex items-center gap-2">
+                  <div className="flex-1">
+                    <p className="text-sm">{question.text}</p>
+                    {question.description && (
+                      <p className="text-xs text-muted-foreground mt-1">{question.description}</p>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-2 ml-4">
                     <span className="text-sm font-medium">{answer}</span>
                     <span 
                       className={`w-3 h-3 rounded-full ${
