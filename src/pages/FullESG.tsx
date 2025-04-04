@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, BarChart, ChartPie, Shield, Users, InfoCircle } from 'lucide-react';
+import { ArrowRight, BarChart, ChartPie, Shield, Users, HelpCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import Calculator from '@/components/Calculator';

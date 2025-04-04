@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
@@ -12,7 +11,7 @@ import {
   CardHeader, 
   CardTitle 
 } from '@/components/ui/card';
-import { InfoCircle } from 'lucide-react';
+import { HelpCircle } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 export type Question = {
@@ -142,7 +141,7 @@ const Calculator = ({ title, description, type, questions }: CalculatorProps) =>
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger>
-                  <InfoCircle className="h-5 w-5 text-muted-foreground" />
+                  <HelpCircle className="h-5 w-5 text-muted-foreground" />
                 </TooltipTrigger>
                 <TooltipContent>
                   <p className="max-w-xs">{question.description}</p>
