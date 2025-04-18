@@ -9,6 +9,7 @@ import GovMetrics from "./pages/GovMetrics";
 import EnvMetrics from "./pages/EnvMetrics";
 import SocMetrics from "./pages/SocMetrics";
 import FullESG from "./pages/FullESG";
+import Results from "./pages/Results";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
