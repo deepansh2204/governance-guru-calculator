@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
@@ -336,28 +335,69 @@ const Calculator = ({ title, description, type, questions }: CalculatorProps) =>
             </div>
           );
         })}
+      </div>
+    );
+  };
 
-        {answers[question.id] !== undefined && (
-          <div className="mt-3 p-3 bg-slate-50 rounded-md">
-            <div className="flex justify-between items-center">
-              <span className="text-sm font-medium">Calculated Result:</span>
-              <span className="text-lg font-bold">{Math.round(answers[question.id] * 100) / 100}</span>
-            </div>
-            {scoreDetails[question.id] && (
-              <div className="flex justify-between items-center mt-1">
-                <span className="text-sm font-medium">Mapped Score (0-5):</span>
-                <span className="text-lg font-bold">{scoreDetails[question.id].score} - {getScoreText(scoreDetails[question.id].score)}</span>
-              </div>
-            )}
-            <p className="text-xs text-muted-foreground mt-1">
-              Formula: {question.formula}
-            </p>
+  const exportResults = () => {
+    const resultsData = {
+      title,
+      dateCompleted: new Date().toISOString(),
+      answers: Object.entries(answers).map(([questionId, rawValue]) => {
+        const question = questions.find(q => q.id === questionId);
+        const mappedScore = scoreDetails[questionId]?.score || 0;
+        return {
+          question: question?.text,
+          rawValue,
+          score: mappedScore,
+          weight: question?.weight
+        };
+      }),
+      finalScore: score
+    };
+
+    // Simple encryption using base64 (for demo purposes - in real world use proper encryption)
+    const password = "1234";
+    const encryptedData = btoa(password + JSON.stringify(resultsData));
+    
+    // Create and download file
+    const blob = new Blob([encryptedData], { type: 'text/plain' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${title.toLowerCase().replace(/\s+/g, '-')}-results.txt`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
+  };
+  
+  const renderResults = () => {
+    if (!completed) return null;
+    
+    return (
+      <div className="space-y-8 animate-fade-in">
+        <div className="text-center">
+          <h3 className="text-2xl font-semibold mb-2">Your {title} Score</h3>
+          <div className="inline-flex items-center justify-center w-32 h-32 rounded-full border-8 border-muted">
+            <span className={`text-4xl font-bold ${getScoreColor()}`}>{score}</span>
           </div>
-        )}
+          <p className="mt-4 text-muted-foreground">{getScoreDescription()}</p>
+        </div>
+        
+        <div className="flex justify-between">
+          <Button variant="outline" onClick={handleStart}>
+            Start Over
+          </Button>
+          <Button variant="default" onClick={exportResults}>
+            Export Detailed Results
+          </Button>
+        </div>
       </div>
     );
   };
   
+  // Remove score display from formula inputs and question rendering
   const renderQuestion = () => {
     if (!started || currentStep >= questions.length) return null;
     
@@ -451,77 +491,7 @@ const Calculator = ({ title, description, type, questions }: CalculatorProps) =>
       </div>
     );
   };
-  
-  const renderResults = () => {
-    if (!completed) return null;
-    
-    return (
-      <div className="space-y-8 animate-fade-in">
-        <div className="text-center">
-          <h3 className="text-2xl font-semibold mb-2">Your {title} Score</h3>
-          <div className="inline-flex items-center justify-center w-32 h-32 rounded-full border-8 border-muted">
-            <span className={`text-4xl font-bold ${getScoreColor()}`}>{score}</span>
-          </div>
-          <p className="mt-4 text-muted-foreground">{getScoreDescription()}</p>
-        </div>
-        
-        <div className="space-y-4">
-          <h4 className="font-medium">Score Breakdown</h4>
-          {questions.map((question) => {
-            const details = scoreDetails[question.id];
-            const rawValue = details ? details.rawValue : (answers[question.id] || 0);
-            const mappedScore = details ? details.score : mapValueToScore(question.id, rawValue);
-            
-            // Determine color based on the 0-5 score
-            const status = mappedScore >= 4 ? 'good' : mappedScore >= 2 ? 'warning' : 'poor';
-            
-            return (
-              <div key={question.id} className="p-4 bg-slate-50 rounded-lg">
-                <div className="flex justify-between">
-                  <div className="flex-1">
-                    <p className="text-sm font-medium">{question.text}</p>
-                    {question.description && (
-                      <p className="text-xs text-muted-foreground mt-1">{question.description}</p>
-                    )}
-                    {question.formula && (
-                      <p className="text-xs text-muted-foreground mt-1">Formula: {question.formula}</p>
-                    )}
-                  </div>
-                  <div className="flex flex-col items-end ml-4">
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs text-muted-foreground">Raw:</span>
-                      <span className="text-sm">{Math.round(rawValue * 100) / 100}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs text-muted-foreground">Score:</span>
-                      <span className="text-sm font-medium">{mappedScore}/5</span>
-                      <span 
-                        className={`w-3 h-3 rounded-full ${
-                          status === 'good' ? 'bg-green-500' : 
-                          status === 'warning' ? 'bg-yellow-500' : 
-                          'bg-red-500'
-                        }`}
-                      ></span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-        
-        <div className="flex justify-between">
-          <Button variant="outline" onClick={handleStart}>
-            Start Over
-          </Button>
-          <Button variant="default" onClick={() => window.print()}>
-            Export Results
-          </Button>
-        </div>
-      </div>
-    );
-  };
-  
+
   const renderStartScreen = () => {
     if (started) return null;
     
