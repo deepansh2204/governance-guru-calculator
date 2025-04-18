@@ -1,3 +1,4 @@
+
 import Calculator from '@/components/Calculator';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -132,22 +133,7 @@ const GovMetrics = () => {
       inputLabels: ['Number of Data Breaches', 'Total Attempted Breaches', 'AI Security Level (1-5)'],
       scoringScale: [0, 1, 2, 3, 4, 5] // Direct 0-5 scale
     },
-    {
-      id: 'board_independence',
-      text: 'Board Independence',
-      type: 'slider' as const,
-      min: 0,
-      max: 100,
-      step: 5,
-      weight: 9,
-      idealValue: 50,
-      idealRange: [50, 100] as [number, number],
-      description: 'Measures the proportion of independent directors on the board. Ensures decisions are unbiased and in shareholder interest.',
-      formula: '(Number of Independent Directors / Total Board Size) × 100',
-      formulaInputs: ['independent', 'total'],
-      inputLabels: ['Number of Independent Directors', 'Total Board Size'],
-      scoringScale: [0, 20, 35, 50, 75, 100]
-    },
+    // Removed board_independence (question 9) as it was a duplicate
     {
       id: 'ceo_chair_separation',
       text: 'CEO-Chair Separation',
