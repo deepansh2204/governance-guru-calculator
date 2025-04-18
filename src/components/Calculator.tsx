@@ -397,7 +397,7 @@ const Calculator = ({ title, description, type, questions }: CalculatorProps) =>
     );
   };
   
-  // Remove score display from formula inputs and question rendering
+  // Fix for the Next button not working at question 9
   const renderQuestion = () => {
     if (!started || currentStep >= questions.length) return null;
     
@@ -567,9 +567,14 @@ const Calculator = ({ title, description, type, questions }: CalculatorProps) =>
           </Button>
           <Button 
             onClick={handleNext}
+            // Fix for the Next button at question 9 (and any other question):
+            // Only disable if formula inputs are required but not all provided
             disabled={
               questions[currentStep]?.formula &&
               questions[currentStep]?.formulaInputs &&
+              !questions[currentStep]?.formulaInputs?.every(
+                input => (formulaInputValues[questions[currentStep].id]?.[input] !== undefined)
+              ) && 
               !answers[questions[currentStep].id]
             }
           >
