@@ -25,6 +25,7 @@ const App = () => (
           <Route path="/environmental" element={<EnvMetrics />} />
           <Route path="/social" element={<SocMetrics />} />
           <Route path="/full-esg" element={<FullESG />} />
+          <Route path="/results" element={<Results />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

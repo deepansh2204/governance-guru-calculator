@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -39,6 +40,7 @@ export type CalculatorProps = {
 };
 
 const Calculator = ({ title, description, type, questions }: CalculatorProps) => {
+  const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(0);
   const [started, setStarted] = useState(false);
   const [completed, setCompleted] = useState(false);
@@ -73,74 +75,73 @@ const Calculator = ({ title, description, type, questions }: CalculatorProps) =>
     
     // Default scoring based on the question type and ranges
     switch (questionId) {
-      case 'ethical_business_conduct': // % completion of AI compliance checks
+      case 'board_independence': // % completion of AI compliance checks
         // 0: Not implemented, 5: Fully integrated & real-time
         if (rawValue <= 0) return 0;
         if (rawValue < 20) return 1;
-        if (rawValue < 40) return 2;
-        if (rawValue < 60) return 3;
-        if (rawValue < 80) return 4;
+        if (rawValue < 35) return 2;
+        if (rawValue < 50) return 3;
+        if (rawValue < 75) return 4;
         return 5; // >= 80%
         
-      case 'board_composition': // % of Independent & diverse members
-        // 0: <20%, 5: >60% diverse and independent
-        if (rawValue < 20) return 0;
-        if (rawValue < 30) return 1;
-        if (rawValue < 40) return 2;
-        if (rawValue < 50) return 3;
-        if (rawValue <= 60) return 4;
-        return 5; // > 60%
+      case 'ceo_chair_separation': // % of Independent & diverse members
+        return rawValue;
         
-      case 'shareholder_rights': // No. of digital disclosures/quarter
-        // 0: <1, 5: >4 per quarter, real-time enabled
-        if (rawValue < 1) return 0;
-        if (rawValue === 1) return 1;
-        if (rawValue === 2) return 2;
-        if (rawValue === 3) return 3;
-        if (rawValue === 4) return 4;
+      case 'board_diversity': // No. of digital disclosures/quarter
+        if (rawValue < 20) return 0;
+        if (rawValue < 40) return 1;
+        if (rawValue < 60) return 2;
+        if (rawValue < 80) return 3;
+        if (rawValue < 100) return 4;
         return 5; // > 4
         
-      case 'risk_management': // Frequency of AI risk assessments/year
-        // 0: None, 5: Monthly automated reviews (which would be 12/year)
+      case 'audit_committee_independence': // Frequency of AI risk assessments/year
         if (rawValue <= 0) return 0;
-        if (rawValue <= 2) return 1; // Quarterly
-        if (rawValue <= 4) return 2; // Bi-monthly
-        if (rawValue <= 6) return 3; // Every other month
-        if (rawValue < 12) return 4; // Almost monthly
+        if (rawValue < 25) return 1; // Quarterly
+        if (rawValue < 50) return 2; // Bi-monthly
+        if (rawValue < 75) return 3; // Every other month
+        if (rawValue < 90) return 4; // Almost monthly
         return 5; // Monthly (12) or more
         
-      case 'whistleblower_mechanism': // % of cases resolved transparently
+      case 'executive_compensation_alignment': // % of cases resolved transparently
         // 0: None, 5: >10/year with third-party validation
         // Note: This doesn't match your percentage formula, adjusting to use % resolved
         if (rawValue <= 0) return 0;
         if (rawValue < 20) return 1;
-        if (rawValue < 40) return 2;
-        if (rawValue < 60) return 3;
-        if (rawValue < 80) return 4;
+        if (rawValue < 35) return 2;
+        if (rawValue < 50) return 3;
+        if (rawValue < 75) return 4;
         return 5; // >= 80%
         
-      case 'stakeholder_engagement': // Engagements verified via blockchain/year
-        // 0: None, 5: Continuous disclosure system
-        if (rawValue <= 0) return 0;
-        if (rawValue <= 3) return 1;
-        if (rawValue <= 6) return 2;
-        if (rawValue <= 10) return 3;
-        if (rawValue <= 15) return 4;
-        return 5; // > 15 per year = continuous
+      case 'anti_corruption_practices': // Engagements verified via blockchain/year
+        return rawValue;
         
-      case 'esg_oversight': // % automation in ESG compliance
-        // 0: Manual, 5: Fully automated monitoring
-        if (rawValue <= 0) return 0;
-        if (rawValue < 20) return 1;
-        if (rawValue < 40) return 2;
-        if (rawValue < 60) return 3;
-        if (rawValue < 80) return 4;
-        return 5; // >= 80%
+      case 'shareholder_rights_index': // % automation in ESG compliance
+        return rawValue;
         
-      case 'data_security': // Combined measure of breaches and security level
-        // 0: Frequent breaches, 5: Zero with AI-level 5
-        // This is already normalized to 0-5 by the formula
-        return Math.min(5, Math.max(0, rawValue));
+      case 'controversy_score': // Combined measure of breaches and security level
+        if (rawValue <= 50) return 0;
+        if (rawValue <= 70) return 1;
+        if (rawValue <= 85) return 2;
+        if (rawValue <= 95) return 3;
+        if (rawValue < 100) return 4;
+        return 5;
+        
+      case 'ownership_concentration': // Combined measure of breaches and security level
+        if (rawValue >= 100) return 0;
+        if (rawValue >= 80) return 1;
+        if (rawValue >= 60) return 2;
+        if (rawValue >= 40) return 3;
+        if (rawValue >= 20) return 4;
+        return 5;
+        
+      case 'related_party_transaction': // Combined measure of breaches and security level
+        if (rawValue >= 100) return 0;
+        if (rawValue >= 50) return 1;
+        if (rawValue >= 25) return 2;
+        if (rawValue >= 10) return 3;
+        if (rawValue >= 5) return 4;
+        return 5;
         
       default:
         // If no specific mapping is defined, normalize to 0-5 scale
@@ -180,39 +181,35 @@ const Calculator = ({ title, description, type, questions }: CalculatorProps) =>
         let calculatedValue = 0;
         
         switch (questionId) {
-          case 'ethical_business_conduct':
-            // (Completed AI Compliance Checks / Total Scheduled Checks) × 100
-            calculatedValue = (inputValues.completed / inputValues.total) * 100;
-            break;
-          case 'board_composition':
-            // (No. of Independent & Diverse Directors / Total Board Members) × 100
+          case 'board_independence':
             calculatedValue = (inputValues.independent / inputValues.total) * 100;
             break;
-          case 'shareholder_rights':
-            // Total Digital Governance Disclosures / Quarter
-            calculatedValue = inputValues.disclosures;
+          case 'ceo_chair_separation':
+            calculatedValue = inputValues.separated;
             break;
-          case 'risk_management':
-            // Total AI Risk Assessments Conducted / Year
-            calculatedValue = inputValues.assessments;
+          case 'board_diversity':
+            calculatedValue = (inputValues.genderScore + inputValues.experienceScore) / 2;
             break;
-          case 'whistleblower_mechanism':
-            // (Whistleblower Cases Resolved with Independent Review / Total Cases) × 100
-            calculatedValue = (inputValues.resolved / inputValues.total) * 100;
+          case 'audit_committee_independence':
+            calculatedValue = (inputValues.independent / inputValues.total) * 100;
             break;
-          case 'stakeholder_engagement':
-            // No. of Verified Blockchain Reports / Year
-            calculatedValue = inputValues.reports;
+          case 'executive_compensation_alignment':
+            calculatedValue = (inputValues.performanceLinked / inputValues.total) * 100;
             break;
-          case 'esg_oversight':
-            // (Automated Compliance Tasks / Total ESG Tasks) × 100
-            calculatedValue = (inputValues.automated / inputValues.total) * 100;
+          case 'anti_corruption_practices':
+            calculatedValue = inputValues.implementedPolicies;
             break;
-          case 'data_security':
-            // [(1 - (Data Breaches / Total Attempts)) × (AI Security Level / 5)] × 5
-            const breachRatio = inputValues.breaches > 0 && inputValues.attempts > 0 ? 
-              1 - (inputValues.breaches / inputValues.attempts) : 1;
-            calculatedValue = breachRatio * (inputValues.securityLevel / 5) * 5;
+          case 'shareholder_rights_index':
+            calculatedValue = inputValues.implementedProtections;
+            break;
+          case 'controversy_score':
+            calculatedValue = inputValues.controversyScore;
+            break;
+          case 'ownership_concentration':
+            calculatedValue = inputValues.topThreeOwnership;
+            break;
+          case 'related_party_transaction':
+            calculatedValue = (inputValues.rptValue / inputValues.totalRevenue) * 100;
             break;
           default:
             break;
@@ -339,7 +336,7 @@ const Calculator = ({ title, description, type, questions }: CalculatorProps) =>
     );
   };
 
-  const exportResults = () => {
+  const viewResults = () => {
     const resultsData = {
       title,
       dateCompleted: new Date().toISOString(),
@@ -356,20 +353,7 @@ const Calculator = ({ title, description, type, questions }: CalculatorProps) =>
       finalScore: score
     };
 
-    // Simple encryption using base64 (for demo purposes - in real world use proper encryption)
-    const password = "1234";
-    const encryptedData = btoa(password + JSON.stringify(resultsData));
-    
-    // Create and download file
-    const blob = new Blob([encryptedData], { type: 'text/plain' });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${title.toLowerCase().replace(/\s+/g, '-')}-results.txt`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    window.URL.revokeObjectURL(url);
+    navigate('/results', { state: { results: resultsData } });
   };
   
   const renderResults = () => {
@@ -389,8 +373,8 @@ const Calculator = ({ title, description, type, questions }: CalculatorProps) =>
           <Button variant="outline" onClick={handleStart}>
             Start Over
           </Button>
-          <Button variant="default" onClick={exportResults}>
-            Export Detailed Results
+          <Button variant="default" onClick={viewResults}>
+            View Detailed Results
           </Button>
         </div>
       </div>
