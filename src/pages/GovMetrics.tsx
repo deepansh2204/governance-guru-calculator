@@ -1,4 +1,3 @@
-
 import Calculator from '@/components/Calculator';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -164,6 +163,118 @@ const GovMetrics = () => {
       formulaInputs: ['rptValue', 'totalRevenue'],
       inputLabels: ['Related Party Transactions Value', 'Total Revenue'],
       scoringScale: [100, 50, 25, 10, 5, 0]
+    },
+    {
+      id: 'ai_compliance_checks',
+      text: 'AI Compliance Checks Completion',
+      type: 'numeric' as const,
+      min: 0,
+      max: 100,
+      step: 1,
+      weight: 8,
+      idealValue: 100,
+      idealRange: [80, 100] as [number, number],
+      description: 'Measures integrity adherence via automated detection.',
+      formula: '(Completed AI Compliance Checks / Total Scheduled Checks) × 100',
+      formulaInputs: ['completed', 'total'],
+      inputLabels: ['Completed AI Compliance Checks', 'Total Scheduled Checks'],
+      scoringScale: [0, 20, 40, 60, 80, 100]
+    },
+    {
+      id: 'digital_disclosures',
+      text: 'Digital Governance Disclosures',
+      type: 'numeric' as const,
+      min: 0,
+      max: 20,
+      step: 1,
+      weight: 7,
+      idealValue: 4,
+      idealRange: [4, 20] as [number, number],
+      description: 'Evaluates shareholder involvement & access through digital disclosures.',
+      formula: 'Total Digital Governance Disclosures per Quarter',
+      formulaInputs: ['disclosures'],
+      inputLabels: ['Number of Digital Disclosures per Quarter'],
+      scoringScale: [0, 1, 2, 3, 4, 5]
+    },
+    {
+      id: 'ai_risk_assessments',
+      text: 'AI Risk Assessments Frequency',
+      type: 'numeric' as const,
+      min: 0,
+      max: 12,
+      step: 1,
+      weight: 9,
+      idealValue: 12,
+      idealRange: [4, 12] as [number, number],
+      description: 'Assesses proactive risk monitoring systems through regular AI risk assessments.',
+      formula: 'Total AI Risk Assessments Conducted per Year',
+      formulaInputs: ['assessments'],
+      inputLabels: ['Number of AI Risk Assessments per Year'],
+      scoringScale: [0, 1, 2, 4, 6, 12]
+    },
+    {
+      id: 'whistleblower_resolution',
+      text: 'Whistleblower Case Resolution',
+      type: 'numeric' as const,
+      min: 0,
+      max: 100,
+      step: 1,
+      weight: 8,
+      idealValue: 90,
+      idealRange: [80, 100] as [number, number],
+      description: 'Tracks functional reporting & ethical culture through case resolution.',
+      formula: '(Resolved Cases with Independent Review / Total Cases) × 100',
+      formulaInputs: ['resolved', 'total'],
+      inputLabels: ['Resolved Cases with Independent Review', 'Total Cases'],
+      scoringScale: [0, 20, 40, 60, 80, 100]
+    },
+    {
+      id: 'blockchain_engagements',
+      text: 'Blockchain-Verified Engagements',
+      type: 'numeric' as const,
+      min: 0,
+      max: 50,
+      step: 1,
+      weight: 7,
+      idealValue: 10,
+      idealRange: [10, 50] as [number, number],
+      description: 'Gauges stakeholder inclusion and auditability through blockchain verification.',
+      formula: 'Number of Verified Blockchain Reports per Year',
+      formulaInputs: ['reports'],
+      inputLabels: ['Number of Blockchain-Verified Reports'],
+      scoringScale: [0, 2, 4, 6, 8, 10]
+    },
+    {
+      id: 'esg_automation',
+      text: 'ESG Compliance Automation',
+      type: 'numeric' as const,
+      min: 0,
+      max: 100,
+      step: 1,
+      weight: 8,
+      idealValue: 80,
+      idealRange: [60, 100] as [number, number],
+      description: 'Monitors dynamic ESG governance responsiveness through automation.',
+      formula: '(Automated Compliance Tasks / Total ESG Tasks) × 100',
+      formulaInputs: ['automated', 'total'],
+      inputLabels: ['Number of Automated Compliance Tasks', 'Total ESG Tasks'],
+      scoringScale: [0, 20, 40, 60, 80, 100]
+    },
+    {
+      id: 'data_security',
+      text: 'Data Security and Privacy Score',
+      type: 'numeric' as const,
+      min: 0,
+      max: 100,
+      step: 1,
+      weight: 9,
+      idealValue: 90,
+      idealRange: [80, 100] as [number, number],
+      description: 'Ensures integrity of corporate data governance.',
+      formula: '[(1 - (Data Breaches / Total Attempts)) × (AI Security Level / 5)] × 100',
+      formulaInputs: ['breaches', 'attempts', 'securityLevel'],
+      inputLabels: ['Number of Data Breaches', 'Total Attempts', 'AI Security Level (0-5)'],
+      scoringScale: [0, 20, 40, 60, 80, 100]
     }
   ];
 
