@@ -211,6 +211,30 @@ const Calculator = ({ title, description, type, questions }: CalculatorProps) =>
           case 'related_party_transaction':
             calculatedValue = (inputValues.rptValue / inputValues.totalRevenue) * 100;
             break;
+          case 'ai_compliance_checks':
+            calculatedValue = (inputValues.completed / inputValues.total) * 100;
+            break;
+          case 'digital_disclosures':
+            calculatedValue = inputValues.disclosures;
+            break;
+          case 'ai_risk_assessments':
+            calculatedValue = inputValues.assessments;
+            break;
+          case 'whistleblower_resolution':
+            calculatedValue = (inputValues.resolved / inputValues.total) * 100;
+            break;
+          case 'blockchain_engagements':
+            calculatedValue = inputValues.reports;
+            break;
+          case 'esg_automation':
+            calculatedValue = (inputValues.automated / inputValues.total) * 100;
+            break;
+          case 'data_security':
+            // [(1 - (Data Breaches / Total Attempts)) × (AI Security Level / 5)] × 100
+            const breachRatio = inputValues.breaches / inputValues.attempts;
+            const securityRatio = inputValues.securityLevel / 5;
+            calculatedValue = (1 - breachRatio) * securityRatio * 100;
+            break;
           default:
             break;
         }
