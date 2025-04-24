@@ -1,3 +1,4 @@
+
 import Calculator from '@/components/Calculator';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -5,102 +6,100 @@ import Footer from '@/components/Footer';
 const EnvMetrics = () => {
   const envQuestions = [
     {
-      id: 'carbon_emissions',
-      text: 'What are your organization\'s annual carbon emissions in metric tons of CO2 equivalent per million dollars of revenue?',
-      type: 'numeric' as const,
-      min: 0,
-      max: 1000,
-      step: 1,
+      id: 'carbon_emissions_intensity',
+      text: 'What is your carbon emissions intensity?',
+      type: 'formula' as const,
       weight: 10,
-      idealValue: 0,
-      idealRange: [0, 100] as [number, number]
+      idealValue: 0.5,
+      idealRange: [0, 1] as [number, number],
+      description: 'Measures greenhouse gas emissions relative to revenue',
+      formula: '(Total GHG Emissions in CO₂e / Total Revenue) × 1000',
+      formulaInputs: ['ghgEmissions', 'totalRevenue'],
+      inputLabels: ['Total GHG Emissions (CO₂e)', 'Total Revenue']
+    },
+    {
+      id: 'energy_efficiency',
+      text: 'What is your energy efficiency rate?',
+      type: 'formula' as const,
+      weight: 8,
+      idealValue: 95,
+      idealRange: [80, 100] as [number, number],
+      description: 'Measures units of output relative to energy consumed',
+      formula: '(Units of Output / Total Energy Consumed) × 100',
+      formulaInputs: ['outputUnits', 'energyConsumed'],
+      inputLabels: ['Units of Output', 'Total Energy Consumed']
+    },
+    {
+      id: 'water_usage_efficiency',
+      text: 'What is your water use efficiency?',
+      type: 'formula' as const,
+      weight: 7,
+      idealValue: 100,
+      idealRange: [50, 150] as [number, number],
+      description: 'Measures total output relative to water consumption',
+      formula: 'Total Output / Total Water Consumption in KL',
+      formulaInputs: ['totalOutput', 'waterConsumption'],
+      inputLabels: ['Total Output', 'Total Water Consumption (KL)']
+    },
+    {
+      id: 'waste_management',
+      text: 'What is your waste reuse & recycling rate?',
+      type: 'formula' as const,
+      weight: 7,
+      idealValue: 90,
+      idealRange: [70, 100] as [number, number],
+      description: 'Measures percentage of waste reused or recycled',
+      formula: '(Reused + Recycled Waste / Total Waste Generated) × 100',
+      formulaInputs: ['reusedRecycledWaste', 'totalWaste'],
+      inputLabels: ['Reused + Recycled Waste', 'Total Waste Generated']
+    },
+    {
+      id: 'sustainable_sourcing',
+      text: 'What is your sustainable sourcing ratio?',
+      type: 'formula' as const,
+      weight: 6,
+      idealValue: 90,
+      idealRange: [60, 100] as [number, number],
+      description: 'Measures percentage of sustainably sourced inputs',
+      formula: '(Sustainably Sourced Inputs / Total Inputs) × 100',
+      formulaInputs: ['sustainableInputs', 'totalInputs'],
+      inputLabels: ['Sustainably Sourced Inputs', 'Total Inputs']
+    },
+    {
+      id: 'eco_friendly_packaging',
+      text: 'What is your green packaging rate?',
+      type: 'formula' as const,
+      weight: 6,
+      idealValue: 90,
+      idealRange: [60, 100] as [number, number],
+      description: 'Measures percentage of eco-friendly packaging material used',
+      formula: '(Eco-Friendly Packaging Material Used / Total Packaging Material) × 100',
+      formulaInputs: ['ecoFriendlyPackaging', 'totalPackaging'],
+      inputLabels: ['Eco-Friendly Packaging Material', 'Total Packaging Material']
+    },
+    {
+      id: 'biodiversity_protection',
+      text: 'What is your biodiversity investment ratio?',
+      type: 'formula' as const,
+      weight: 5,
+      idealValue: 30,
+      idealRange: [10, 50] as [number, number],
+      description: 'Measures investment in biodiversity protection as percentage of CSR spend',
+      formula: '(Amount Invested in Biodiversity Protection / Total CSR Spend) × 100',
+      formulaInputs: ['biodiversityInvestment', 'totalCSRSpend'],
+      inputLabels: ['Investment in Biodiversity Protection', 'Total CSR Spend']
     },
     {
       id: 'renewable_energy',
-      text: 'What percentage of your energy consumption comes from renewable sources?',
-      type: 'slider' as const,
-      min: 0,
-      max: 100,
-      step: 5,
+      text: 'What is your renewable energy share?',
+      type: 'formula' as const,
       weight: 8,
-      idealValue: 100,
-      idealRange: [50, 100] as [number, number]
-    },
-    {
-      id: 'waste_reduction',
-      text: 'What percentage of your waste is diverted from landfills (recycled, reused, composted)?',
-      type: 'slider' as const,
-      min: 0,
-      max: 100,
-      step: 5,
-      weight: 7,
-      idealValue: 100,
-      idealRange: [60, 100] as [number, number]
-    },
-    {
-      id: 'water_consumption',
-      text: 'What is your annual water consumption in cubic meters per million dollars of revenue?',
-      type: 'numeric' as const,
-      min: 0,
-      max: 10000,
-      step: 10,
-      weight: 6,
-      idealValue: 0,
-      idealRange: [0, 1000] as [number, number]
-    },
-    {
-      id: 'environmental_policy',
-      text: 'Does your organization have a formal environmental policy?',
-      type: 'boolean' as const,
-      weight: 8,
-      idealValue: 1
-    },
-    {
-      id: 'climate_risk_assessment',
-      text: 'Has your organization conducted a climate risk assessment?',
-      type: 'boolean' as const,
-      weight: 7,
-      idealValue: 1
-    },
-    {
-      id: 'emission_reduction_targets',
-      text: 'Does your organization have specific, time-bound emission reduction targets?',
-      type: 'boolean' as const,
-      weight: 9,
-      idealValue: 1
-    },
-    {
-      id: 'sustainable_procurement',
-      text: 'What percentage of your suppliers meet your sustainability criteria?',
-      type: 'slider' as const,
-      min: 0,
-      max: 100,
-      step: 5,
-      weight: 5,
-      idealValue: 100,
-      idealRange: [70, 100] as [number, number]
-    },
-    {
-      id: 'environmental_compliance',
-      text: 'How many environmental compliance violations has your organization had in the past year?',
-      type: 'numeric' as const,
-      min: 0,
-      max: 50,
-      step: 1,
-      weight: 8,
-      idealValue: 0,
-      idealRange: [0, 0] as [number, number]
-    },
-    {
-      id: 'biodiversity_impact',
-      text: 'On a scale of 1-10, how would you rate your organization\'s efforts to protect biodiversity?',
-      type: 'slider' as const,
-      min: 1,
-      max: 10,
-      step: 1,
-      weight: 6,
-      idealValue: 10,
-      idealRange: [7, 10] as [number, number]
+      idealValue: 80,
+      idealRange: [50, 100] as [number, number],
+      description: 'Measures percentage of energy consumption from renewable sources',
+      formula: '(Renewable Energy Consumption / Total Energy Consumption) × 100',
+      formulaInputs: ['renewableEnergy', 'totalEnergy'],
+      inputLabels: ['Renewable Energy Consumption', 'Total Energy Consumption']
     }
   ];
 

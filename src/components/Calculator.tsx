@@ -18,7 +18,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 export type Question = {
   id: string;
   text: string;
-  type: 'numeric' | 'slider' | 'boolean';
+  type: 'numeric' | 'slider' | 'boolean' | 'formula';
   min?: number;
   max?: number;
   step?: number;
@@ -181,6 +181,59 @@ const Calculator = ({ title, description, type, questions }: CalculatorProps) =>
         let calculatedValue = 0;
         
         switch (questionId) {
+          // Social metrics calculations
+          case 'gender_diversity_ratio':
+            calculatedValue = (inputValues.femaleEmployees / inputValues.totalEmployees) * 100;
+            break;
+          case 'employee_welfare_coverage':
+            calculatedValue = (inputValues.coveredEmployees / inputValues.totalEmployees) * 100;
+            break;
+          case 'training_skill_development':
+            calculatedValue = (inputValues.trainedEmployees / inputValues.totalEmployees) * 100;
+            break;
+          case 'health_safety_coverage':
+            calculatedValue = (inputValues.safetyCoveredEmployees / inputValues.totalEmployees) * 100;
+            break;
+          case 'grievance_redressal':
+            calculatedValue = (inputValues.resolvedComplaints / inputValues.totalComplaints) * 100;
+            break;
+          case 'differently_abled_inclusion':
+            calculatedValue = (inputValues.differentlyAbledEmployees / inputValues.totalEmployees) * 100;
+            break;
+          case 'csr_spend_index':
+            calculatedValue = (inputValues.csrSpend / inputValues.netProfit) * 100;
+            break;
+          case 'parental_leave_return':
+            calculatedValue = (inputValues.returningEmployees / inputValues.leaveTakingEmployees) * 100;
+            break;
+
+          // Environmental metrics calculations
+          case 'carbon_emissions_intensity':
+            calculatedValue = (inputValues.ghgEmissions / inputValues.totalRevenue) * 1000;
+            break;
+          case 'energy_efficiency':
+            calculatedValue = (inputValues.outputUnits / inputValues.energyConsumed) * 100;
+            break;
+          case 'water_usage_efficiency':
+            calculatedValue = inputValues.totalOutput / inputValues.waterConsumption;
+            break;
+          case 'waste_management':
+            calculatedValue = (inputValues.reusedRecycledWaste / inputValues.totalWaste) * 100;
+            break;
+          case 'sustainable_sourcing':
+            calculatedValue = (inputValues.sustainableInputs / inputValues.totalInputs) * 100;
+            break;
+          case 'eco_friendly_packaging':
+            calculatedValue = (inputValues.ecoFriendlyPackaging / inputValues.totalPackaging) * 100;
+            break;
+          case 'biodiversity_protection':
+            calculatedValue = (inputValues.biodiversityInvestment / inputValues.totalCSRSpend) * 100;
+            break;
+          case 'renewable_energy':
+            calculatedValue = (inputValues.renewableEnergy / inputValues.totalEnergy) * 100;
+            break;
+
+          // Governance metrics calculations
           case 'board_independence':
             calculatedValue = (inputValues.independent / inputValues.total) * 100;
             break;
